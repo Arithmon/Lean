@@ -72,6 +72,10 @@ Lean), not intuitionistically constructive.
 
 ---
 
+Siblings: [Program](https://github.com/arithmon/program) ·
+[Atlas](https://github.com/arithmon/atlas) ·
+[Sieve](https://github.com/arithmon/sieve)
+
 <sub>GIFT is the founding framework of the Arithmon program.
 Program: [arithmon.com](https://arithmon.com) ·
 [github.com/arithmon](https://github.com/arithmon)</sub>
