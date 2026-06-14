@@ -24,7 +24,10 @@
   sqrt (irrational), hence "rational fragment".
 
   Cross-checked against an exact-rational (`fractions.Fraction`) re-run of the
-  Sieve engine: |E_rat| = 32, 91, 1416 at budgets 1, 2, 3. Pure Lean 4 core.
+  Sieve engine: |E_rat| = 32, 91, 1416, 9782, 105329 at budgets 1 to 5. The
+  budget-5 count enumerates ~4 million raw values before deduplication, which an
+  O(n log n) sort-dedup (not the earlier O(n^2) filter) makes tractable for
+  `native_decide`. Pure Lean 4 core.
 -/
 
 namespace Arithmon.Sieve.GStruct
@@ -76,24 +79,33 @@ def unOp (op : Nat) (v : Rat) : Option Rat :=
   | 0 => if v == 0 then none else some (1/v)
   | _ => some (v*v)
 
-/-- Order-insensitive deduplication by exact `Rat` equality (no `List.dedup`
-    in core Lean). -/
-def nub (l : List Rat) : List Rat :=
-  l.foldl (fun acc x => if acc.contains x then acc else x :: acc) []
+/-- Sort then drop adjacent duplicates: O(n log n) deduplication by exact `Rat`
+    equality (core Lean has no `List.dedup`; `Array.qsort` and a linear scan
+    replace the earlier O(n^2) membership filter, which is what lets the counts
+    reach budget 5, where the raw value stream is ~4 million entries). -/
+def sortDedup (a : Array Rat) : Array Rat := Id.run do
+  let s := a.qsort (fun x y => x < y)
+  let mut out : Array Rat := #[]
+  let mut prev : Option Rat := none
+  for x in s do
+    if prev != some x then out := out.push x
+    prev := some x
+  return out
 
 /-- Dynamic program over node count, mirroring the engine: `L[n]` holds the
-    distinct values reachable by an expression of EXACTLY `n` nodes. -/
-def levels (k : Nat) : Array (List Rat) := Id.run do
-  let mut L : Array (List Rat) := #[[]]
+    distinct values reachable by an expression of EXACTLY `n` nodes, sorted and
+    deduplicated. -/
+def levels (k : Nat) : Array (Array Rat) := Id.run do
+  let mut L : Array (Array Rat) := #[#[]]
   for n in [1:k+1] do
     if n == 1 then
-      L := L.push (nub (atoms.filter okMag))
+      L := L.push (sortDedup ((atoms.filter okMag).toArray))
     else
-      let mut raw : List Rat := []
+      let mut raw : Array Rat := #[]
       for v in L[n-1]! do
         for uo in [0,1] do
           match unOp uo v with
-          | some r => if okMag r then raw := r :: raw
+          | some r => if okMag r then raw := raw.push r
           | none => pure ()
       for i in [1:n-1] do
         let j := n-1-i
@@ -101,35 +113,39 @@ def levels (k : Nat) : Array (List Rat) := Id.run do
           for b in L[j]! do
             for bo in [0,1,2,3,4] do
               match binOp bo a b with
-              | some r => if okMag r then raw := r :: raw
+              | some r => if okMag r then raw := raw.push r
               | none => pure ()
-      L := L.push (nub raw)
+      L := L.push (sortDedup raw)
   return L
 
 /-- All distinct values reachable within `k` nodes. -/
-def valuesUpTo (k : Nat) : List Rat :=
-  nub ((List.range k).flatMap (fun i => (levels k)[i+1]!))
+def valuesUpTo (k : Nat) : Array Rat :=
+  let L := levels k
+  sortDedup ((List.range k).foldl (fun acc i => acc ++ L[i+1]!) #[])
 
 /-- |E(G_STRUCT, k)| after value canonicalization: the trials-factor
     denominator. -/
-def count (k : Nat) : Nat := (valuesUpTo k).length
+def count (k : Nat) : Nat := (valuesUpTo k).size
 
 /-- A target value is reachable within `k` nodes (the haystack contains it). -/
 def reachable (k : Nat) (t : Rat) : Bool := (valuesUpTo k).contains t
 
 /- ------------------------------------------------------------------------
-   Certified counts (rational fragment). Match the exact-rational Python
-   re-run. These are the machine-checked trials-factor denominators.
+   Certified counts (rational fragment), budgets 1 to 5. Each matches the
+   exact-rational Python re-run of the Sieve engine. These are the
+   machine-checked trials-factor denominators (figure F2 data).
    ------------------------------------------------------------------------ -/
 
 theorem alphabet_size : atoms.length = 32 := by native_decide
 theorem count_k1 : count 1 = 32 := by native_decide
 theorem count_k2 : count 2 = 91 := by native_decide
-/-- The search look-elsewhere factor at budget 3: 1416 distinct values. -/
 theorem count_k3 : count 3 = 1416 := by native_decide
+theorem count_k4 : count 4 = 9782 := by native_decide
+/-- The search look-elsewhere factor at budget 5: 105329 distinct values. -/
+theorem count_k5 : count 5 = 105329 := by native_decide
 
 /- ------------------------------------------------------------------------
-   The Koide value in the real frozen grammar (not a toy).
+   The two N0/N1 survivors, reachable in the real frozen grammar (not a toy).
    ------------------------------------------------------------------------ -/
 
 /-- Koide's 2/3 is reachable by search in the frozen G_STRUCT at budget 3,
@@ -137,5 +153,11 @@ theorem count_k3 : count 3 = 1416 := by native_decide
     `count 3 = 1416`; a pre-committed theorem witness would pay 1
     (see `Arithmon.Rebate.Core`). -/
 theorem koide_reachable : reachable 3 (2/3) = true := by native_decide
+
+/-- The m_H/m_W value 81/52 is reachable by search at budget 5, e.g. as
+    (3 + 78)/52. The gross look-elsewhere factor at that budget is
+    `count 5 = 105329`; the budget-filtered isolation rank against a measured
+    window is the methodology paper's payload, not computed here. -/
+theorem mHmW_reachable : reachable 5 (81/52) = true := by native_decide
 
 end Arithmon.Sieve.GStruct

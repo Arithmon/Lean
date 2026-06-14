@@ -20,9 +20,12 @@ methodology needs a proof assistant for:
   `G_STRUCT(betti = 21, 77)` grammar (freeze v1.0,
   DOI 10.5281/zenodo.20666879). The **rational fragment** (the grammar without
   `sqrt`, so values stay rational and dedup is by exact `Rat` equality) has
-  certified counts `|E_rat(G_STRUCT, k)| = 32, 91, 1416` at budgets 1, 2, 3,
-  cross-checked against an exact-rational re-run of the Sieve engine. Koide's
-  2/3 is shown reachable in the real grammar.
+  certified counts `|E_rat(G_STRUCT, k)| = 32, 91, 1416, 9782, 105329` at
+  budgets 1 to 5, cross-checked against an exact-rational re-run of the Sieve
+  engine. The budget-5 count enumerates about 4 million raw values before
+  deduplication; an O(n log n) sort-dedup makes it tractable for `native_decide`.
+  Both N0/N1 survivor values are shown reachable in the real grammar (2/3 at
+  budget 3, 81/52 at budget 5).
 - `Arithmon/Rebate/Core.lean`: the generic rebate definitions and a minimal
   worked example (toy grammar) exhibiting the search-versus-theorem contrast
   end to end, all by `native_decide`, zero `sorry`.
