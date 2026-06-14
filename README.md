@@ -37,14 +37,21 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
 
 - **Generic layer (this repository, today).** Pure Lean 4 core, **no Mathlib**,
   so the trusted base of the certified counts is as small as possible.
-- **Per-client audit layer (next).** Confirming that a specific GIFT relation
-  (Koide, m_H/m_W, n_s) is a proven consequence of the framework axioms, not a
-  numerical lemma asserting a value, requires reading GIFT core's Lean. That
-  layer will depend on GIFT core at the **same pinned Mathlib release as this
-  toolchain, `v4.29.0`**. Pinning to a Mathlib release tag (as GIFT core already
-  does) is what keeps this aligned with upstream and interoperable with core;
-  the repository is a normal `lake` project that *requires* Mathlib, not a fork
-  of it.
+- **Per-client audit layer (next).** Confirming that a specific framework
+  relation is a proven consequence of the framework axioms, not a numerical
+  lemma asserting a value, requires reading that framework's Lean. The audit
+  decomposes into three checkable conditions (Sieve ledger D24): **R1a** the
+  value is a proven consequence of the framework's invariants (the gate);
+  **R1b** the value is not over-reachable within the framework, one forced
+  formula rather than many (the popularity discount); **R1c** the physical
+  observable is derived and shown equal to the value, not merely identified
+  with it. This layer will depend on the audited framework's Lean (for the GIFT
+  case study, GIFT core) at the **same pinned Mathlib release as this toolchain,
+  `v4.29.0`**. Pinning to a Mathlib release tag (as GIFT core already does) is
+  what keeps this aligned with upstream and interoperable with core; the
+  repository is a normal `lake` project that *requires* Mathlib, not a fork of
+  it. Per-relation audit verdicts of a case study are the methodology paper's
+  payload, not published here.
 
 ## Build
 
