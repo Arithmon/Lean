@@ -1,2 +1,3 @@
 .lake/
 /build/
+lint_report.json
