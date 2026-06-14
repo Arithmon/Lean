@@ -1,0 +1,10 @@
+name = "arithmon_lean"
+defaultTargets = ["Arithmon"]
+
+# Mathlib is intentionally NOT a dependency of this (generic) layer: it is pure
+# Lean 4 core, so the machine-checked counts have the smallest possible trusted
+# base. When the per-client R1 audit layer is added it will depend on GIFT core
+# at the SAME pinned Mathlib release as this toolchain (v4.29.0); see README.
+
+[[lean_lib]]
+name = "Arithmon"
