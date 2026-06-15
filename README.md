@@ -25,7 +25,12 @@ methodology needs a proof assistant for:
   engine. The budget-5 count enumerates about 4 million raw values before
   deduplication; an O(n log n) sort-dedup makes it tractable for `native_decide`.
   Both N0/N1 survivor values are shown reachable in the real grammar (2/3 at
-  budget 3, 81/52 at budget 5).
+  budget 3, 81/52 at budget 5). The same file defines `isolationRank`, the
+  exact count of distinct values inside a rational window `[lo, hi]` at a budget
+  — the certifiable form of the scorecard isolation statistic. The machinery is
+  generic and machine-checked (toy windows by `native_decide`); a framework's
+  measured windows and the resulting ranks are the methodology paper's payload,
+  kept out of this layer.
 - `Arithmon/Rebate/Core.lean`: the generic rebate definitions and a minimal
   worked example (toy grammar) exhibiting the search-versus-theorem contrast
   end to end, all by `native_decide`, zero `sorry`.

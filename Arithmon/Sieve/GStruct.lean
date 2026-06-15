@@ -130,6 +130,33 @@ def count (k : Nat) : Nat := (valuesUpTo k).size
 /-- A target value is reachable within `k` nodes (the haystack contains it). -/
 def reachable (k : Nat) (t : Rat) : Bool := (valuesUpTo k).contains t
 
+/-- The EXACT isolation rank within a rational window `[lo, hi]` at budget `k`:
+    the number of distinct grammar values that fall in the window, i.e. that
+    match a measurement at least as well as a claim sitting at the window edge
+    (the scorecard `D18` statistic, exactly). `Rat` equality is the dedup key, so
+    this is free of the float engine's 12-digit merge/split risk for the
+    rational fragment it covers. The window edge must be the EXACT claim value
+    (not `measured - dev_float`), else the claim can fall a float-epsilon outside
+    its own window; with an exact edge the claim is always counted, so a
+    budget-unique match certifies as rank 1. The GIFT-specific windows (a
+    measured value plus or minus its achieved deviation) and the resulting ranks
+    are the methodology paper's payload; this is the generic, certifiable
+    statistic. -/
+def isolationRank (k : Nat) (lo hi : Rat) : Nat :=
+  ((valuesUpTo k).filter (fun v => lo ≤ v && v ≤ hi)).size
+
+/-- Illustration on a TOY window, no framework input: at budget 1 the only
+    distinct values in `[1, 2]` are the leaf atoms 1 and 2, so the rank is 2.
+    Demonstrates the statistic computes and is machine-checkable. -/
+theorem isolationRank_toy : isolationRank 1 1 2 = 2 := by native_decide
+
+/-- A window can be empty of competitors save a single value: the toy window
+    `[81/52, 81/52]` (a degenerate point) at budget 5 contains exactly the one
+    value `81/52`, certifying the machinery returns 1 on a unique-in-window
+    point. (A real measured window is wider; its rank is the paper's payload.) -/
+theorem isolationRank_point : isolationRank 5 (81/52) (81/52) = 1 := by
+  native_decide
+
 /- ------------------------------------------------------------------------
    Certified counts (rational fragment), budgets 1 to 5. Each matches the
    exact-rational Python re-run of the Sieve engine. These are the
@@ -157,7 +184,8 @@ theorem koide_reachable : reachable 3 (2/3) = true := by native_decide
 /-- The m_H/m_W value 81/52 is reachable by search at budget 5, e.g. as
     (3 + 78)/52. The gross look-elsewhere factor at that budget is
     `count 5 = 105329`; the budget-filtered isolation rank against a measured
-    window is the methodology paper's payload, not computed here. -/
+    window is computed by `isolationRank` above (the GIFT-specific window and its
+    rank are the methodology paper's payload, kept out of this public layer). -/
 theorem mHmW_reachable : reachable 5 (81/52) = true := by native_decide
 
 end Arithmon.Sieve.GStruct
