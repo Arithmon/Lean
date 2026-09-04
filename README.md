@@ -55,7 +55,7 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
   observable is derived and shown equal to the value, not merely identified
   with it. This layer will depend on the audited framework's Lean (for the GIFT
   case study, GIFT core) at the **same pinned Mathlib release as this toolchain,
-  `v4.29.0`**. Pinning to a Mathlib release tag (as GIFT core already does) is
+  `v4.29.1`**. Pinning to a Mathlib release tag (as GIFT core already does) is
   what keeps this aligned with upstream and interoperable with core; the
   repository is a normal `lake` project that *requires* Mathlib, not a fork of
   it. Per-relation audit verdicts of a case study are the methodology paper's
@@ -67,7 +67,7 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
 lake build
 ```
 
-Requires the Lean toolchain in `lean-toolchain` (`v4.29.0`); `elan` installs it
+Requires the Lean toolchain in `lean-toolchain` (`v4.29.1`); `elan` installs it
 automatically. The generic layer has no dependencies, so the build is offline
 and fast.
 
