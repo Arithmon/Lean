@@ -53,10 +53,12 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
   **R1b** the value is not over-reachable within the framework, one forced
   formula rather than many (the popularity discount); **R1c** the physical
   observable is derived and shown equal to the value, not merely identified
-  with it. This layer will depend on the audited framework's Lean (for the GIFT
-  case study, GIFT core) at the **same pinned Mathlib release as this toolchain,
-  `v4.29.1`**. Pinning to a Mathlib release tag (as GIFT core already does) is
-  what keeps this aligned with upstream and interoperable with core; the
+  with it. This layer will depend on the audited framework's Lean (for the K₇
+  case study, [K7-Lean](https://github.com/arithmon/k7-lean)) at a **shared pinned
+  Mathlib release**. This toolchain is pinned to `v4.29.1`; K7-Lean moved to
+  `v4.33.1` on 2026-09-07, so the two must be realigned before that dependency is
+  added. Pinning to a Mathlib release tag (as K7-Lean does) is what keeps this
+  aligned with upstream and interoperable with the framework's core; the
   repository is a normal `lake` project that *requires* Mathlib, not a fork of
   it. Per-relation audit verdicts of a case study are the methodology paper's
   payload, not published here.
