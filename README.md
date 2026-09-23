@@ -55,9 +55,8 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
   observable is derived and shown equal to the value, not merely identified
   with it. This layer will depend on the audited framework's Lean (for the K₇
   case study, [K7-Lean](https://github.com/arithmon/k7-lean)) at a **shared pinned
-  Mathlib release**. This toolchain is pinned to `v4.29.1`; K7-Lean moved to
-  `v4.33.1` on 2026-09-07, so the two must be realigned before that dependency is
-  added. Pinning to a Mathlib release tag (as K7-Lean does) is what keeps this
+  Mathlib release**. This toolchain is pinned to `v4.33.1`, the release K7-Lean
+  uses, so that dependency can be added without realignment. Pinning to a Mathlib release tag (as K7-Lean does) is what keeps this
   aligned with upstream and interoperable with the framework's core; the
   repository is a normal `lake` project that *requires* Mathlib, not a fork of
   it. Per-relation audit verdicts of a case study are the methodology paper's
@@ -69,7 +68,7 @@ full grammar (with `sqrt`) stays in Python; this is its auditable rational core.
 lake build
 ```
 
-Requires the Lean toolchain in `lean-toolchain` (`v4.29.1`); `elan` installs it
+Requires the Lean toolchain in `lean-toolchain` (`v4.33.1`); `elan` installs it
 automatically. The generic layer has no dependencies, so the build is offline
 and fast.
 

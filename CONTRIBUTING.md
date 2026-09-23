@@ -39,7 +39,8 @@ Org-wide rules (what helps, what does not, house style) are in the
 - A proof that depends on widening the grammar or the vocabulary to make a
   target reachable.
 
-Mathlib is a pinned dependency (v4.29.0, matching the GIFT core). Do not vendor
+The generic layer has no dependencies (pure Lean 4 core). When the audit layer
+adds Mathlib, it is pinned to the same release as K7-Lean (v4.33.1). Do not vendor
 or fork it.
 
 ---
