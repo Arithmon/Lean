@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: "Arithmon / Lean"
+message: >-
+  If you use or discuss this repository, please cite it as below.
+type: software
+authors:
+  - family-names: "de La Fournière"
+    given-names: "Brieuc"
+repository-code: "https://github.com/Arithmon/Lean"
+abstract: >-
+  The machine-checked formal layer of the Arithmon Sieve: certified expression-space counts and the in-framework-theorem rebate, in Lean 4.
+license: MIT
